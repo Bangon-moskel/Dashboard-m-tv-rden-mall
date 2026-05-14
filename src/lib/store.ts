@@ -12,6 +12,7 @@ import {
   type WidgetKind,
 } from "@/lib/types";
 import { getStore } from "@/lib/storage";
+import { getScheduler } from "@/lib/runtime/scheduler";
 import { uid } from "@/lib/utils";
 
 interface DashboardState {
@@ -114,7 +115,10 @@ export const useDashboard = create<DashboardState>((set, get) => ({
       let pipelines = s.config.pipelines;
       if (widget?.pipelineId) {
         const used = widgets.some((w) => w.pipelineId === widget.pipelineId);
-        if (!used) pipelines = pipelines.filter((p) => p.id !== widget.pipelineId);
+        if (!used) {
+          pipelines = pipelines.filter((p) => p.id !== widget.pipelineId);
+          if (typeof window !== "undefined") getScheduler().stop(widget.pipelineId);
+        }
       }
       const next = { ...s.config, widgets, pipelines };
       persist(next);
@@ -265,11 +269,13 @@ export const useDashboard = create<DashboardState>((set, get) => ({
     }),
 
   importConfig: (next) => {
+    if (typeof window !== "undefined") getScheduler().stopAll();
     persist(next);
     set({ config: next });
   },
 
   resetConfig: () => {
+    if (typeof window !== "undefined") getScheduler().stopAll();
     const empty = emptyDashboard();
     persist(empty);
     set({ config: empty });

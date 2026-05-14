@@ -20,6 +20,7 @@ class Scheduler {
     let handle = this.handles.get(pipeline.id);
     const intervalSec = defaultIntervalSeconds(pipeline) ?? 60;
     const intervalMs = Math.max(1000, intervalSec * 1000);
+    const isNew = !handle;
 
     if (!handle) {
       handle = {
@@ -45,28 +46,41 @@ class Scheduler {
 
     handle.listeners.add(listener);
     if (handle.lastResult) listener(handle.lastResult);
-    this.tick(handle);
+
+    if (isNew) {
+      void this.tick(handle);
+    }
     this.ensureTimer(handle);
 
     return () => {
       const h = this.handles.get(pipeline.id);
       if (!h) return;
       h.listeners.delete(listener);
-      if (h.listeners.size === 0) {
-        if (h.timer) clearInterval(h.timer);
-        this.handles.delete(pipeline.id);
-      }
     };
   }
 
   refresh(pipelineId: string): void {
     const handle = this.handles.get(pipelineId);
-    if (handle) this.tick(handle);
+    if (handle) void this.tick(handle);
+  }
+
+  stop(pipelineId: string): void {
+    const handle = this.handles.get(pipelineId);
+    if (!handle) return;
+    if (handle.timer) clearInterval(handle.timer);
+    this.handles.delete(pipelineId);
+  }
+
+  stopAll(): void {
+    for (const handle of this.handles.values()) {
+      if (handle.timer) clearInterval(handle.timer);
+    }
+    this.handles.clear();
   }
 
   private ensureTimer(handle: RunHandle): void {
     if (handle.timer) return;
-    handle.timer = setInterval(() => this.tick(handle), handle.intervalMs);
+    handle.timer = setInterval(() => void this.tick(handle), handle.intervalMs);
   }
 
   private async tick(handle: RunHandle): Promise<void> {
