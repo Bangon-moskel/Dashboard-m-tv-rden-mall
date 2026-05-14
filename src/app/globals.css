@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "react-grid-layout/css/styles.css";
+@import "@xyflow/react/dist/style.css";
+
+:root {
+  --bg: 248 250 252;
+  --panel: 255 255 255;
+  --border: 226 232 240;
+  --fg: 15 23 42;
+  --muted: 100 116 139;
+  --accent: 79 70 229;
+  --danger: 220 38 38;
+  --success: 16 185 129;
+}
+
+:root.dark {
+  --bg: 15 23 42;
+  --panel: 30 41 59;
+  --border: 51 65 85;
+  --fg: 226 232 240;
+  --muted: 148 163 184;
+  --accent: 129 140 248;
+  --danger: 248 113 113;
+  --success: 52 211 153;
+}
+
+html,
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+  min-height: 100%;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: rgb(var(--accent) / 0.25);
+  border-radius: 0.75rem;
+}
+
+.react-grid-item > .react-resizable-handle::after {
+  border-right-color: rgb(var(--muted));
+  border-bottom-color: rgb(var(--muted));
+}
+
+.react-flow__node {
+  font-family: inherit;
+}
+
+.react-flow__controls,
+.react-flow__minimap {
+  background: rgb(var(--panel));
+  border: 1px solid rgb(var(--border));
+}
+
+.react-flow__controls button {
+  background: rgb(var(--panel));
+  color: rgb(var(--fg));
+  border-bottom: 1px solid rgb(var(--border));
+}

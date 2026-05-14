@@ -1,0 +1,23 @@
+services:
+  web:
+    build: .
+    image: dashboard-mall:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+
+  # Förberett för Fas 2: FastAPI-backend som kör Python-script på schema.
+  # Avkommentera när backend-tjänsten finns under ./api.
+  # api:
+  #   build: ./api
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./api/scripts:/app/scripts
+  #     - api-data:/app/data
+  #   restart: unless-stopped
+
+# volumes:
+#   api-data:
